@@ -6,8 +6,9 @@ Property management system
 1. clone the repo and open the repo directory.
 2. run `npm install`
 3. create user `ss` in postgresql and make sure it has permissions to create db.
-4. run `npx prisma migrate dev` to create DB and seed data.
-5. finally, run `npm run dev` to start the server at `http://localhost:4000/graphql`
+4. create `.env` file and fill it with secret data sent in email
+5. run `npx prisma migrate dev` to create DB and seed data.
+6. finally, run `npm run dev` to start the server at `http://localhost:4000/graphql`
 
 ## notes:
 
