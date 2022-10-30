@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Unit {
+  id          BigInt        @id @unique @default(autoincrement())
+  unit_name   String        @unique
+  reservation Reservation[]
+  lock        Lock[]
+}
+
+model Reservation {
+  id           BigInt       @id @unique @default(autoincrement())
+  unit         Unit         @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+  unit_id      BigInt
+  guest_name   String
+  check_in     DateTime
+  check_out    DateTime
+  is_cancelled Boolean      @default(false)
+  access_code  AccessCode[]
+}
+
+model Lock {
+  id             BigInt       @id @unique @default(autoincrement())
+  unit           Unit         @relation(fields: [unit_id], references: [id], onDelete: Cascade)
+  unit_id        BigInt
+  // the device id to communicate with Tuya
+  remote_lock_id String       @unique
+  access_code    AccessCode[]
+}
+
+model AccessCode {
+  id                 BigInt      @id @unique @default(autoincrement())
+  lock               Lock        @relation(fields: [lock_id], references: [id], onDelete: Cascade)
+  lock_id            BigInt
+  reservation        Reservation @relation(fields: [reservation_id], references: [id], onDelete: Cascade)
+  reservation_id     BigInt
+  // the 6-digit access code
+  passcode           String
+  // id of the access code as returned by Tuya, you'll need this identifier to delete or update access codes
+  remote_passcode_id String
+}
+
+model Credentials {
+  id            BigInt   @id @unique @default(autoincrement())
+  access_token  String
+  expires_in    DateTime
+  refresh_token String
+  uid           String
+}
